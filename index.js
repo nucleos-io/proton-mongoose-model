@@ -6,9 +6,34 @@ let Schema = mongoose.Schema
 
 module.exports = class Model {
 
-  constructor(options) {
+  constructor(proton) {
+    this.proton = proton
     this._schema = {}
-    this.options = options || {}
+    this.options = {}
+    this._bindToApp()
+    this.expose()
+  }
+
+  expose() {
+    global[this.name] = this
+    return true
+  }
+
+  schema() {
+    return new Error('You must implement the method schema')
+  }
+
+  static build(proton) {
+    let model = new this(proton)
+    return model._generateModel()
+  }
+
+  get name() {
+    return this.constructor.name
+  }
+
+  _generateModel() {
+    return mongoose.model(this.name, this._buildSchema())
   }
 
   _buildSchema() {
@@ -20,19 +45,6 @@ module.exports = class Model {
     this._createVirtualMethods(prototype)
     return this._schema
 
-  }
-
-  _generateModel() {
-    return mongoose.model(this.constructor.name, this._buildSchema())
-  }
-
-  static build(opts) {
-    let model = new this(opts)
-    return model._generateModel()
-  }
-
-  schema() {
-    return new Error('You must implement the method schema')
   }
 
   _createInstanceMethods(o) {
@@ -83,6 +95,10 @@ module.exports = class Model {
   _setVirtualMethod(name, method) {
     let v = this._schema.virtual(name)
     return (_.has(method, 'set')) ? v.set(method.set) : v.get(method.get)
+  }
+
+  _bindToApp() {
+    this.proton.app.models[this.name] = this
   }
 
 }
