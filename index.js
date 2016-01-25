@@ -3,7 +3,7 @@
 module.exports = class MongooseModel {
 
   constructor(proton) {
-    super(proton)
+    this.proton = proton
     this._schema = {}
     this.options = {}
     this._bindToApp()
