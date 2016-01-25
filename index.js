@@ -1,17 +1,26 @@
 'use strict'
 
-let mongoose = require('mongoose')
-let Schema = mongoose.Schema
-
-
-module.exports = class Model {
+module.exports = class MongooseModel {
 
   constructor(proton) {
-    this.proton = proton
+    super(proton)
     this._schema = {}
     this.options = {}
     this._bindToApp()
     this.expose()
+  }
+
+  build(mongoose) {
+    this.mongoose = mongoose
+    return this._generateModel()
+  }
+
+  get name() {
+    return this.constructor.name
+  }
+
+  schema() {
+    return new Error('You must implement the method schema')
   }
 
   expose() {
@@ -19,27 +28,18 @@ module.exports = class Model {
     return true
   }
 
-  schema() {
-    return new Error('You must implement the method schema')
-  }
-
-  static build(proton) {
-    let model = new this(proton)
-    return model._generateModel()
-  }
-
-  get name() {
-    return this.constructor.name
+  _bindToApp() {
+    this.proton.app.models[this.name] = this
   }
 
   _generateModel() {
-    return mongoose.model(this.name, this._buildSchema())
+    return this.mongoose.model(this.name, this._buildSchema())
   }
 
   _buildSchema() {
     let prototype = this.constructor.prototype
     let constructor = this.constructor
-    this._schema = new Schema(this.schema(), {})
+    this._schema = new this.mongoose.Schema(this.schema(), {})
     this._createStaticMethods(constructor)
     this._createInstanceMethods(prototype)
     this._createVirtualMethods(prototype)
