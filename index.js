@@ -1,5 +1,7 @@
 'use strict'
 
+let _ = require('lodash')
+
 module.exports = class MongooseModel {
 
   constructor(proton) {
