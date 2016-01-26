@@ -6,7 +6,8 @@ module.exports = class MongooseModel {
     this.proton = proton
     this._schema = {}
     this.options = {}
-    this._bindToApp()
+    this.store = this.store()
+      this._bindToApp()
     this.expose()
   }
 
@@ -14,7 +15,7 @@ module.exports = class MongooseModel {
     this.mongoose = mongoose
     return this._generateModel()
   }
-  
+
   schema() {
     return new Error('You must implement the method schema')
   }
@@ -28,7 +29,7 @@ module.exports = class MongooseModel {
     return this.constructor.name
   }
 
-  get store() {
+  store() {
     return this.app.config.database.store
   }
 
