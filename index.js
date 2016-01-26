@@ -7,7 +7,7 @@ module.exports = class MongooseModel {
     this._schema = {}
     this.options = {}
     this.store = this.store()
-      this._bindToApp()
+    this._bindToApp()
     this.expose()
   }
 
@@ -30,7 +30,7 @@ module.exports = class MongooseModel {
   }
 
   store() {
-    return this.app.config.database.store
+    return this.proton.app.config.database.store
   }
 
   _generateModel() {
