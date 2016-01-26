@@ -14,11 +14,7 @@ module.exports = class MongooseModel {
     this.mongoose = mongoose
     return this._generateModel()
   }
-
-  get name() {
-    return this.constructor.name
-  }
-
+  
   schema() {
     return new Error('You must implement the method schema')
   }
@@ -28,8 +24,12 @@ module.exports = class MongooseModel {
     return true
   }
 
-  _bindToApp() {
-    this.proton.app.models[this.name] = this
+  get name() {
+    return this.constructor.name
+  }
+
+  get store() {
+    return this.app.config.database.store
   }
 
   _generateModel() {
