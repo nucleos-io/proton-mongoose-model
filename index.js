@@ -10,7 +10,6 @@ module.exports = class MongooseModel {
     this.options = {}
     this.store = this.store()
     this._bindToApp()
-    this.expose()
   }
 
   build(mongoose) {
@@ -23,7 +22,7 @@ module.exports = class MongooseModel {
   }
 
   expose() {
-    global[this.name] = this
+    global[this.name] = this.model
     return true
   }
 
@@ -36,7 +35,9 @@ module.exports = class MongooseModel {
   }
 
   _generateModel() {
-    return this.mongoose.model(this.name, this._buildSchema())
+    this.model = this.mongoose.model(this.name, this._buildSchema())
+    this.expose()
+    return this.model
   }
 
   _buildSchema() {
