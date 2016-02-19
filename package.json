@@ -1,6 +1,6 @@
 {
-  "name": "proton-model",
-  "version": "1.0.8",
+  "name": "proton-mongoose-model",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,6 @@
   "author": "Nucleos",
   "license": "ISC",
   "dependencies": {
-    "mongoose": "^4.3.6"
+    "mongoose": "^4.3.7"
   }
 }

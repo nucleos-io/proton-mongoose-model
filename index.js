@@ -1,6 +1,7 @@
 'use strict'
 
-let _ = require('lodash')
+const _ = require('lodash')
+
 
 module.exports = class MongooseModel {
 
@@ -12,8 +13,10 @@ module.exports = class MongooseModel {
     this._bindToApp()
   }
 
-  build(mongoose) {
+  build(mongoose, uri) {
     this.mongoose = mongoose
+    this.Schema = this.mongoose.Schema
+    this.mongoose.connect(uri)
     return this._generateModel()
   }
 
@@ -43,7 +46,7 @@ module.exports = class MongooseModel {
   _buildSchema() {
     let prototype = this.constructor.prototype
     let constructor = this.constructor
-    this._schema = new this.mongoose.Schema(this.schema(), {})
+    this._schema = new this.Schema(this.schema())
     this._createStaticMethods(constructor)
     this._createInstanceMethods(prototype)
     this._createVirtualMethods(prototype)
