@@ -1,62 +1,65 @@
 'use strict'
 
 const _ = require('lodash')
+const BaseModel = require('proton-base-model')
 
-
-module.exports = class MongooseModel {
+/**
+ * @class MongooseModel
+ * @classdesc The mongoose model class allow to build models in a more elegant
+ * way in mongoose
+ * @todo add triggers methods as beforeCreate, beforeUpdate... etc
+ * @author Luis Hernandez
+ */
+class MongooseModel extends BaseModel {
 
   constructor(proton) {
-    this.proton = proton
+    super(proton)
     this._schema = {}
     this.options = {}
-    this.store = this.store()
-    this._bindToApp()
   }
 
-  build(mongoose, uri) {
+  /**
+   * @method
+   * @override
+   * @description this method is responsible of get the schema object from
+   * mongoose and generate the model
+   * @param mongoose - the mongoose adapter
+   * @param uri - the mongo uri connecion
+   * @author Luis Hernandez
+   */
+  build(mongoose) {
     this.mongoose = mongoose
-    this.Schema = this.mongoose.Schema
-    this.mongoose.connect(uri)
-    return this._generateModel()
+    this.model = this._generateModel()
+    return this.model
   }
 
+  /**
+   * @method schema
+   * @description this must be override, and his responsability is
+   * return an object with the structure of a mongoose schema
+   * @return Luis Hernandez
+   */
   schema() {
     return new Error('You must implement the method schema')
   }
 
-  expose() {
-    global[this.name] = this.model
-    return true
-  }
-
-  get name() {
-    return this.constructor.name
-  }
-
-  store() {
-    return this.proton.app.config.database.store
-  }
-
   _generateModel() {
-    this.model = this.mongoose.model(this.name, this._buildSchema())
-    this.expose()
-    return this.model
+    return this.mongoose.model(this.name, this._buildSchema())
   }
 
   _buildSchema() {
-    let prototype = this.constructor.prototype
-    let constructor = this.constructor
-    this._schema = new this.Schema(this.schema())
+    const prototype = this.constructor.prototype
+    const constructor = this.constructor
+    this._schema = new this.mongoose.Schema(this.schema())
     this._createStaticMethods(constructor)
     this._createInstanceMethods(prototype)
     this._createVirtualMethods(prototype)
     return this._schema
-
   }
 
   _createInstanceMethods(o) {
     _.map(Object.getOwnPropertyNames(o), (name) => {
-      let method = Object.getOwnPropertyDescriptor(o, name)
+      const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isInstanceMethod(name, method)) {
         this._schema.method(name, method.value)
       }
@@ -64,9 +67,9 @@ module.exports = class MongooseModel {
   }
 
   _createStaticMethods(o) {
-    let properties = Object.getOwnPropertyNames(o)
-    _.map(Object.getOwnPropertyNames(o), (name) => {
-      let method = Object.getOwnPropertyDescriptor(o, name)
+    const properties = Object.getOwnPropertyNames(o)
+    _.map(properties, (name) => {
+      const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isStaticMethod(name, method)) {
         this._schema.static(name, method.value)
       }
@@ -74,9 +77,9 @@ module.exports = class MongooseModel {
   }
 
   _createVirtualMethods(o) {
-    let properties = Object.getOwnPropertyNames(o)
+    const properties = Object.getOwnPropertyNames(o)
     _.map(Object.getOwnPropertyNames(o), (name) => {
-      let method = Object.getOwnPropertyDescriptor(o, name)
+      const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isVirtualMethod(name, method)) {
         this._setVirtualMethod(name, method)
       }
@@ -100,12 +103,10 @@ module.exports = class MongooseModel {
   }
 
   _setVirtualMethod(name, method) {
-    let v = this._schema.virtual(name)
+    const v = this._schema.virtual(name)
     return (_.has(method, 'set')) ? v.set(method.set) : v.get(method.get)
   }
 
-  _bindToApp() {
-    this.proton.app.models[this.name] = this
-  }
-
 }
+
+module.exports = MongooseModel
