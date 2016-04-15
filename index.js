@@ -36,12 +36,27 @@ class MongooseModel extends BaseModel {
   /**
    * @method schema
    * @description this must be override, and his responsability is
-   * return an object with the structure of a mongoose schema
-   * @return Luis Hernandez
+   * @return an object with the structure of a mongoose schema
    */
   schema() {
     return new Error('You must implement the method schema')
   }
+
+  /**
+   * @method options
+   * @description the object wiht options for instance the mongoose.Schema
+   * @return Object
+   */
+  options() {
+    return {}
+  }
+
+  /**
+   * @method config
+   * @description config the instance of schema before create the model
+   * @param schema - mongoose.Schema
+   */
+  config(schema) {}
 
   _generateModel() {
     return this.mongoose.model(this.name, this._buildSchema())
@@ -50,10 +65,11 @@ class MongooseModel extends BaseModel {
   _buildSchema() {
     const prototype = this.constructor.prototype
     const constructor = this.constructor
-    this._schema = new this.mongoose.Schema(this.schema())
+    this._schema = new this.mongoose.Schema(this.schema(), this.options())
     this._createStaticMethods(constructor)
     this._createInstanceMethods(prototype)
     this._createVirtualMethods(prototype)
+    this.config(this._schema)
     return this._schema
   }
 
