@@ -16,7 +16,6 @@ class MongooseModel extends BaseModel {
   constructor(proton) {
     super(proton)
     this._schema = {}
-    this.types = types
   }
 
   /**
@@ -124,6 +123,9 @@ class MongooseModel extends BaseModel {
     return (_.has(method, 'set')) ? v.set(method.set) : v.get(method.get)
   }
 
+
 }
+
+MongooseModel.types = types
 
 module.exports = MongooseModel
