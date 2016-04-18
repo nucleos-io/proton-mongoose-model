@@ -2,6 +2,7 @@
 
 const _ = require('lodash')
 const BaseModel = require('proton-base-model')
+const types = require('mongoose').Schema.Types
 
 /**
  * @class MongooseModel
@@ -15,7 +16,7 @@ class MongooseModel extends BaseModel {
   constructor(proton) {
     super(proton)
     this._schema = {}
-    this.options = {}
+    this.types = types
   }
 
   /**
