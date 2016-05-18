@@ -98,7 +98,7 @@ class MongooseModel extends BaseModel {
     _.map(Object.getOwnPropertyNames(o), (name) => {
       const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isVirtualMethod(name, method)) {
-        this._setVirtualMethod(name, co.wrap(method))
+        this._setVirtualMethod(name, method)
       }
     })
   }
@@ -121,7 +121,7 @@ class MongooseModel extends BaseModel {
 
   _setVirtualMethod(name, method) {
     const v = this._schema.virtual(name)
-    return (_.has(method, 'set')) ? v.set(method.set) : v.get(method.get)
+    return (_.has(method, 'set')) ? v.set(co.wrap(method.set)) : v.get(co.wrap(method.get))
   }
 
 
