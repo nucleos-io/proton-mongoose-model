@@ -9,11 +9,15 @@ module.exports = class Test extends Model {
     }
   }
 
-  static create(opts) {
+  static * create(opts) {
     const test = new this({name: 'Luis Hernandez'})
-    return test.save()
+    const result = yield test.save()
+    console.log('hola', result)
+    return result
   }
 
-  static update(criteria, opts) {}
+  static * update(criteria, opts) {
+    return yield Promise.resolve()
+  }
   static findOne(criteria) {}
 }

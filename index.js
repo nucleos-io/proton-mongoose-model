@@ -3,6 +3,7 @@
 const _ = require('lodash')
 const BaseModel = require('proton-base-model')
 const types = require('mongoose').Schema.Types
+const co = require('co')
 
 /**
  * @class MongooseModel
@@ -77,7 +78,7 @@ class MongooseModel extends BaseModel {
     _.map(Object.getOwnPropertyNames(o), (name) => {
       const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isInstanceMethod(name, method)) {
-        this._schema.method(name, method.value)
+        this._schema.method(name, co.wrap(method.value))
       }
     })
   }
@@ -87,7 +88,7 @@ class MongooseModel extends BaseModel {
     _.map(properties, (name) => {
       const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isStaticMethod(name, method)) {
-        this._schema.static(name, method.value)
+        this._schema.static(name, co.wrap(method.value))
       }
     })
   }
