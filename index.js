@@ -98,7 +98,7 @@ class MongooseModel extends BaseModel {
     _.map(Object.getOwnPropertyNames(o), (name) => {
       const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isVirtualMethod(name, method)) {
-        this._setVirtualMethod(name, method)
+        this._setVirtualMethod(name, co.wrap(method))
       }
     })
   }
