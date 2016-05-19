@@ -70,15 +70,36 @@ class MongooseModel extends BaseModel {
     this._createStaticMethods(constructor)
     this._createInstanceMethods(prototype)
     this._createVirtualMethods(prototype)
+    this._initLifeCycleCallbacks(this._schema)
     this.config(this._schema)
     return this._schema
+  }
+
+  _initLifeCycleCallbacks(schema) {
+    const self = this
+    schema.pre('save', function(next) {
+      self.beforeCreate = co.wrap(self.beforeCreate)
+      self.beforeCreate(this, next)
+    })
+    schema.post('save', function(doc, next) {
+      self.afterCreate = co.wrap(self.afterCreate)
+      self.afterCreate(doc, next)
+    })
+  }
+
+  * beforeCreate(values, next) {
+    next()
+  }
+
+  * afterCreate(values, next) {
+    next()
   }
 
   _createInstanceMethods(o) {
     _.map(Object.getOwnPropertyNames(o), (name) => {
       const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isInstanceMethod(name, method)) {
-        this._schema.method(name, co.wrap(method.value))
+        this._schema.method(name, method.value)
       }
     })
   }
