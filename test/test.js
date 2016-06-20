@@ -17,7 +17,10 @@ describe('Mongoose model test',  () => {
 
   it('should create a new record with a static method', done => {
     Test.create()
-      .then(record => done())
+      .then(record => {
+        record.getName()
+        done()
+      })
       .catch(err => done(err))
   })
 })

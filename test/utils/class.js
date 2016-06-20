@@ -10,6 +10,7 @@ module.exports = class Test extends Model {
   }
 
   * getName() {
+    console.log('Test', Test)
     return this.name
   }
 
@@ -37,5 +38,4 @@ module.exports = class Test extends Model {
   static * update(criteria, opts) {
     return yield Promise.resolve()
   }
-  static findOne(criteria) {}
 }
