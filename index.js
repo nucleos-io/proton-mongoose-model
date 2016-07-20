@@ -146,11 +146,14 @@ class MongooseModel extends BaseModel {
     return (_.has(method, 'set')) ? v.set(co.wrap(method.set)) : v.get(co.wrap(method.get))
   }
 
-
 }
 
 MongooseModel.adapter = mongoose
 MongooseModel.Schema = mongoose.Schema
 MongooseModel.types = mongoose.Schema.Types
+MongooseModel.parseObjectId = id => {
+  const ObjectId = mongoose.Types.ObjectId
+  return ObjectId.isValid(id) ? new ObjectId(id) : null
+}
 
 module.exports = MongooseModel

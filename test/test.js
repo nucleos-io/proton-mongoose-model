@@ -23,4 +23,17 @@ describe('Mongoose model test',  () => {
       })
       .catch(err => done(err))
   })
+
+  it('Model.parseObjectId', done => {
+    const ObjectId = TestClass.adapter.Types.ObjectId
+    const validObjectId = TestClass.parseObjectId(new ObjectId())
+    const invalidObjectId = TestClass.parseObjectId('invalid ObjectId')
+    if (validObjectId === null) {
+      return done(new Error('Error parsing ObjectId to ObjectId'))
+    }
+    if (invalidObjectId !== null) {
+      return done(new Error('Error parsing invalid string to ObjectId'))
+    }
+    done()
+  })
 })
