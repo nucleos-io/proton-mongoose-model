@@ -30,6 +30,7 @@ class MongooseModel extends BaseModel {
    */
   build(mongoose) {
     this.mongoose = mongoose
+    this.mongoose.Promise = global.Promise
     this.model = this._generateModel()
     return this.model
   }

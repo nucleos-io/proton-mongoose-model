@@ -3,6 +3,7 @@
 const Model = require('../../index')
 
 module.exports = class Test extends Model {
+
   schema() {
     return {
       name: {type: String}
@@ -10,7 +11,6 @@ module.exports = class Test extends Model {
   }
 
   * getName() {
-    console.log('Test', Test)
     return this.name
   }
 
@@ -29,10 +29,7 @@ module.exports = class Test extends Model {
   static * create(opts) {
     const test = new this({name: 'Luis Hernandez'})
     const result = yield test.save()
-    console.log('hola 1')
-    const test2 = yield Promise.resolve()
-    console.log('hola 2', result)
-    return Promise.resolve()
+    return result
   }
 
   static * update(criteria, opts) {
