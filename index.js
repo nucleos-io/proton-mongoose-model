@@ -30,7 +30,7 @@ class MongooseModel extends BaseModel {
    */
   build(mongoose) {
     this.mongoose = mongoose
-    this.mongoose.Promise = global.Promise
+    mongoose.Promise = global.Promise
     this.model = this._generateModel()
     return this.model
   }
@@ -67,7 +67,7 @@ class MongooseModel extends BaseModel {
   _buildSchema() {
     const prototype = this.constructor.prototype
     const constructor = this.constructor
-    this._schema = new this.mongoose.Schema(this.schema(), this.options())
+    this._schema = new mongoose.Schema(this.schema(), this.options())
     this._createStaticMethods(constructor)
     this._createInstanceMethods(prototype)
     this._createVirtualMethods(prototype)
