@@ -86,6 +86,22 @@ class MongooseModel extends BaseModel {
       self.afterCreate = co.wrap(self.afterCreate)
       self.afterCreate(doc, next)
     })
+    schema.pre('update', function(next) {
+      self.beforeUpdate= co.wrap(self.beforeUpdate)
+      self.beforeUpdate(this, next)
+    })
+    schema.post('update', function(doc, next) {
+      self.afterUpdate = co.wrap(self.afterUpdate)
+      self.afterUpdate(doc, next)
+    })
+  }
+
+  * beforeUpdate(values, next) {
+    next()
+  }
+
+  * afterUpdate(values, next) {
+    next()
   }
 
   * beforeCreate(values, next) {
