@@ -87,7 +87,7 @@ class MongooseModel extends BaseModel {
       self.afterCreate(doc, next)
     })
     schema.pre('update', function(next) {
-      self.beforeUpdate= co.wrap(self.beforeUpdate)
+      self.beforeUpdate = co.wrap(self.beforeUpdate)
       self.beforeUpdate(this, next)
     })
     schema.post('update', function(doc, next) {
@@ -126,7 +126,7 @@ class MongooseModel extends BaseModel {
     _.map(properties, (name) => {
       const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isStaticMethod(name, method)) {
-        this._schema.static(name, co.wrap(method.value))
+        this._schema.static(name, method.value)
       }
     })
   }
@@ -142,7 +142,7 @@ class MongooseModel extends BaseModel {
   }
 
   _isStaticMethod(name, method) {
-    return (name !== 'prototype' && name != 'schema' && name !== 'length')
+    return (name !== 'prototype' && name != 'schema' && name !== 'length' && name !== 'name')
   }
 
   _isInstanceMethod(name, method) {
@@ -159,7 +159,7 @@ class MongooseModel extends BaseModel {
 
   _setVirtualMethod(name, method) {
     const v = this._schema.virtual(name)
-    return (_.has(method, 'set')) ? v.set(co.wrap(method.set)) : v.get(co.wrap(method.get))
+    return (_.has(method, 'set')) ? v.set(method.set) : v.get(method.get)
   }
 
 }
