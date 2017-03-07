@@ -67,7 +67,7 @@ class MongooseModel extends BaseModel {
   _buildSchema() {
     const prototype = this.constructor.prototype
     const constructor = this.constructor
-    this._schema = new mongoose.Schema(this.schema(), this.options())
+    this._schema =  new this.mongoose.Schema(this.schema(), this.options())
     this._createStaticMethods(constructor)
     this._createInstanceMethods(prototype)
     this._createVirtualMethods(prototype)
@@ -113,7 +113,8 @@ class MongooseModel extends BaseModel {
   }
 
   _createInstanceMethods(o) {
-    _.map(Object.getOwnPropertyNames(o), (name) => {
+    const properties = Object.getOwnPropertyNames(o)
+    _.map(properties, name => {
       const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isInstanceMethod(name, method)) {
         this._schema.method(name, method.value)
@@ -123,17 +124,18 @@ class MongooseModel extends BaseModel {
 
   _createStaticMethods(o) {
     const properties = Object.getOwnPropertyNames(o)
-    _.map(properties, (name) => {
+    _.map(properties, name => {
       const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isStaticMethod(name, method)) {
-        this._schema.static(name, co.wrap(method.value))
+        console.log(name)
+        this._schema.statics[name] = co.wrap(method.value)
       }
     })
   }
 
   _createVirtualMethods(o) {
     const properties = Object.getOwnPropertyNames(o)
-    _.map(Object.getOwnPropertyNames(o), (name) => {
+    _.map(properties, name => {
       const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isVirtualMethod(name, method)) {
         this._setVirtualMethod(name, method)
@@ -142,19 +144,28 @@ class MongooseModel extends BaseModel {
   }
 
   _isStaticMethod(name, method) {
-    return (name !== 'prototype' && name != 'schema' && name !== 'length')
+    return (
+      name !== 'prototype' &&
+      name != 'schema' &&
+      name !== 'length' &&
+      name != 'name'
+    )
   }
 
   _isInstanceMethod(name, method) {
-    return (name !== 'constructor' &&
+    return (
+      name !== 'constructor' &&
       name != 'schema' &&
-      !(method.set || method.get))
+      !(method.set || method.get)
+    )
   }
 
   _isVirtualMethod(name, method) {
-    return (name !== 'constructor' &&
+    return (
+      name !== 'constructor' &&
       name != 'schema' &&
-      (_.has(method, 'set') || _.has(method, 'get')))
+      (_.has(method, 'set') || _.has(method, 'get'))
+    )
   }
 
   _setVirtualMethod(name, method) {
@@ -164,12 +175,33 @@ class MongooseModel extends BaseModel {
 
 }
 
-MongooseModel.adapter = mongoose
-MongooseModel.Schema = mongoose.Schema
-MongooseModel.types = mongoose.Schema.Types
-MongooseModel.parseObjectId = id => {
-  const ObjectId = mongoose.Types.ObjectId
-  return ObjectId.isValid(id) ? new ObjectId(id) : null
-}
+/**
+ * -----------------------------------------------------------------------------
+ *              Add some properties to the MongooseModel property
+ * -----------------------------------------------------------------------------
+ */
+
+Object.defineProperty(MongooseModel, 'adapter', {
+  value: mongoose,
+  writable: false
+})
+
+Object.defineProperty(MongooseModel, 'Schema', {
+  value: mongoose.Schema,
+  writable: false
+})
+
+Object.defineProperty(MongooseModel, 'types', {
+  value: mongoose.Schema.Types,
+  writable: false
+})
+
+Object.defineProperty(MongooseModel, 'parseObjectId', {
+  value: id => {
+    const ObjectId = mongoose.Types.ObjectId
+    return ObjectId.isValid(id) ? new ObjectId(id) : null
+  },
+  writable: false
+})
 
 module.exports = MongooseModel
