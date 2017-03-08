@@ -65,12 +65,10 @@ class MongooseModel extends BaseModel {
   }
 
   _buildSchema() {
-    const prototype = this.constructor.prototype
-    const constructor = this.constructor
     this._schema =  new this.mongoose.Schema(this.schema(), this.options())
-    this._createStaticMethods(constructor)
-    this._createInstanceMethods(prototype)
-    this._createVirtualMethods(prototype)
+    this._createStaticMethods(this.constructor)
+    this._createInstanceMethods(this.constructor.prototype)
+    this._createVirtualMethods(this.constructor.prototype)
     this._initLifeCycleCallbacks(this._schema)
     this.config(this._schema)
     return this._schema
@@ -127,7 +125,6 @@ class MongooseModel extends BaseModel {
     _.map(properties, name => {
       const method = Object.getOwnPropertyDescriptor(o, name)
       if (this._isStaticMethod(name, method)) {
-        console.log(name)
         this._schema.statics[name] = co.wrap(method.value)
       }
     })
