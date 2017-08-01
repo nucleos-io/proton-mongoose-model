@@ -22,15 +22,12 @@ class MongooseModel extends BaseModel {
   /**
    * @method
    * @override
-   * @description this method is responsible of get the schema object from
-   * mongoose and generate the model
-   * @param mongoose - the mongoose adapter
-   * @param uri - the mongo uri connecion
+   * @description this method is responsible for build mongoose model from
+   * the schema
    * @author Luis Hernandez
    */
-  build(mongoose) {
-    this.mongoose = mongoose
-    mongoose.Promise = global.Promise
+  build(connection) {
+    this.connection = connection
     this.model = this._generateModel()
     return this.model
   }
@@ -61,11 +58,11 @@ class MongooseModel extends BaseModel {
   config(schema) {}
 
   _generateModel() {
-    return this.mongoose.model(this.name, this._buildSchema())
+    return this.connection.model(this.name, this._buildSchema())
   }
 
   _buildSchema() {
-    this._schema =  new this.mongoose.Schema(this.schema(), this.options())
+    this._schema =  new mongoose.Schema(this.schema(), this.options())
     this._createStaticMethods(this.constructor)
     this._createInstanceMethods(this.constructor.prototype)
     this._createVirtualMethods(this.constructor.prototype)
@@ -201,4 +198,5 @@ Object.defineProperty(MongooseModel, 'parseObjectId', {
   writable: false
 })
 
+mongoose.Promise = global.Promise
 module.exports = MongooseModel
